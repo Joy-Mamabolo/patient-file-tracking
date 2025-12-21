@@ -12,15 +12,18 @@ The tool, depending on its implementation, also has the potential to collect dat
 # Roll-out plan
 The project will be developed and rolled-out in stages. Stage 1, the proof of concept, will only involve the clerks. This will then, hopefully,
 be tested in a real hospital setting and feedback incorporated in future versions. Stage 1 will include the following features: 
-> adding of new patient;
-> searching for patient in database;
-> changing file status (in-storage or out)
-> marking a patient as admitted
-> display a list of files that are currently out and highlight files that are overdue
+- adding of new patient;
+- searching for patient in database;
+- changing file status (in-storage or out)
+- marking a patient as admitted
+- display a list of files that are currently out and highlight files that are overdue
+  
 Stage 2 will introduce the roles of super-user and general staff. Super-user is critical, however the general staff access will be workshopped with the clients for final inclusion decision. The following are stage2 deliverables:
-> Generate daily report with a list of overdue files and other metrics (TBC with client)
-> Program Super-user functionality
-> Program General-staff access (if approved)
+
+- Generate daily report with a list of overdue files and other metrics (TBC with client)
+- Program Super-user functionality
+- Program General-staff access (if approved)
+  
 If the General-staff access is approved, then stage 3 will include data analytics that can indicate patient wait times within the hospital as a whole and/or between departments. Otherwise, stage 3 may only include suggested new features from clients and bug fixes. 
 
 
