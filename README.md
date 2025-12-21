@@ -43,14 +43,20 @@ For the full license text, see the [Apache License 2.0](https://www.apache.org/l
 ---To be updated ---
 
 # Database Design
-The database consists of 3 tables with the given columns:
+The database consists of the following tables with the given columns:
 
 1. staff (Staff_ID; Staff_Name; Department; Permissions)
 2. patient_file (File_No, Patient_Name, DOB, File_Status)
 3. logs (File_No, File_Status, Staff_ID, Timestamp)
+4. Departments (department_id, department_name)
+5. Statuses (status_id, status_name)
 
 The staff table stores the staff_ID - set up currently as a autoincrement primary key, but can later be changed to match actual staff ids if they exist. 
 The staff table also has a Permissions column that gives staff members different permissions in the system as follows:
 a) Super-user: Has the rights to add/delete staff members to/from the database, and to assign/revoke user permissions.
 b) General_staff: Has permission to change status of patient_file and to indicate if patient has been admitted.
 c) Clerk: Has rights to add new patients in addition to General_staff permissions.
+
+A permissions table, could have been included to make it possible for staff members to have more than one type of permission. For simplicity, this was not implemented, and can be looked at a later stage if deemed necessary. The department and status tables were added because those can forseeably change based on the client's needs, and having separate tables for them will allow that to happen smoothly.
+
+The program is using SQLite for development and initial testing. For the current scope, SQLite will suffice in production as well, however, the program is developed with portability in mind should it need to be scaled up.

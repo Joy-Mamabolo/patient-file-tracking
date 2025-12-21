@@ -11,3 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+import config
+
+#initialize Flask app
+app = Flask(__name__)
+app.config.from_object(config)
+
+#initialize SQLAlchemy
+db = SQLAlchemy(app)
+
+# Import models after initializing db to avoid circular imports
+import models
+
+with app.app_context():
+    db.create_all()  # Create database tables if they don't exist
+
