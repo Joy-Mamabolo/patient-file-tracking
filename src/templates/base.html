@@ -7,21 +7,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Patient File Tracking System</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('add_patient') }}">Patients</a></li>
 
-                <--! add another one for modifying staff records accessible to the superuser only-->
-            
-            </ul>
-        </nav>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    <footer>
-        <p>&copy; 2025 Patient File Tracking System</p>
-    </footer>
+    <div class="container">
+    
+        <header>
+            <h1>Patient File Tracking System</h1>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li> <span style = "font-size: 28px;">|</span> 
+                    <li><a href="{{ url_for('patients') }}">Patients</a></li>
+
+                    <!-- add another one for modifying staff records accessible to the superuser only-->
+                
+                </ul>
+            </nav>
+        </header>
+        <main>
+            {% block content %}Stuff goes here{% endblock %}
+        </main>
+        <footer>
+            <p>&copy; 2025 Patient File Tracking System</p>
+        </footer>
+    </div>

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Patient File Tracking System</h1>
-  <div class = "Out-files">
+  <div class = "dashboard">
+  <div class = "section"> <!-- Files Out-->
     <h2>Files Out</h2>
     {% if out_files %}
         <table>
@@ -26,7 +26,7 @@
 
   </div>
 
-  <div class = "Overdue-files">
+  <div class = "section"> <!-- Overdue Files -->
     <h2>Overdue Files</h2>
     {% if overdue_files %}
         <table>
@@ -45,7 +45,8 @@
             {% endfor %}
         </table>
     {% else %}
-        <p>No overdue files.</p>
+        <p>No files currently overdue.</p>
     {% endif %}
+  </div>
   </div>
 {% endblock %}
