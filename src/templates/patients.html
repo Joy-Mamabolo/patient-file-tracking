@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Patients{% endblock %}
+
+{% block content %}
+  <h2>Search for Patient</h2>
+
+  <form method = "get" action="{{ url_for('patients') }}">
+    {{ form.hidden_tag() }}
+    <input type="text" name="search" placeholder="Enter patient name">
+    <input type="submit" value="Search">
+  </form>
+
+  {% if patients %}
+    <h3>Search Results:</h3>
+    <ul>
+      {% for patient in patients %}
+        <li>{{ patient.name }} - Age: {{ patient.age }} - Condition: {{ patient.condition }}</li>
+      {% endfor %}
+    </ul>
+  {% elif search %}
+    <p>No patients found matching "{{ search }}".</p> <br><br>
+    
+    <h2>Add New Patient</h2>
+  
+  <form method="POST" action="{{ url_for('patients') }}">
+    {{ form.hidden_tag() }}
+    <div>
+      {{ form.name.label }}
+      {{ form.name(size=64) }}
+    </div>
+    <div>
+      {{ form.age.label }}
+      {{ form.age() }}
+    </div>
+    <div>
+      {{ form.condition.label }}<br>
+      {{ form.condition(size=128) }}
+    </div>
+    <div>
+      {{ form.submit() }}
+    </div>
+  </form>
+  {% endif %}
+{% endblock %}

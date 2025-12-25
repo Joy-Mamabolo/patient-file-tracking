@@ -29,3 +29,24 @@ import models
 with app.app_context():
     db.create_all()  # Create database tables if they don't exist
 
+
+@app.route('/')
+# Implement login functionality later
+def home():
+    return render_template('home.html') # Render the home page template. Pass required data later.
+
+@app.route('/patients', methods=['GET', 'POST'])
+# Implement login functionality later
+def patients():
+
+    if request.method == 'GET':
+        # Handle search query
+        pass
+    elif request.method == 'POST':
+        # Handle adding new patient and mark patient file as "out"
+        pass
+    return render_template('patients.html') # Render the patients page template. Pass required data later.
+
+# Implement modify_staff route later
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,3 +1,6 @@
 Flask 
 sqlalchemy
-requests
+wtforms
+flask-wtf
+flask-sqlalchemy
+flask-login

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Patient File Tracking System</h1>
+  <div class = "Out-files">
+    <h2>Files Out</h2>
+    {% if out_files %}
+        <table>
+            <tr>
+                <th>Patient Name</th>
+                <th>File Number</th>
+                <th>Timestamp</th>
+                
+            </tr>
+            {% for file in out_files %}
+            <tr>
+                <td>{{ file.patient_name }}</td>
+                <td>{{ file.file_no }}</td>
+                <td>{{ file.timestamp}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No files are currently checked out.</p>
+    {% endif %}
+
+  </div>
+
+  <div class = "Overdue-files">
+    <h2>Overdue Files</h2>
+    {% if overdue_files %}
+        <table>
+            <tr>
+                <th>Patient Name</th>
+                <th>File Number</th>
+                <th>Due Date</th>
+                
+            </tr>
+            {% for file in overdue_files %}
+            <tr>
+                <td>{{ file.patient_name }}</td>
+                <td>{{ file.file_no }}</td>
+                <td>{{ file.timestamp}}</td> <!-- Timestamp +24hrs to show due dat -->
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No overdue files.</p>
+    {% endif %}
+  </div>
+{% endblock %}
