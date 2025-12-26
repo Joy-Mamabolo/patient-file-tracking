@@ -6,7 +6,7 @@
   <h2>Search for Patient</h2>
 
   <form method = "get" action="{{ url_for('patients') }}">
-    {{ form.hidden_tag() }}
+   {{ form.hidden_tag() }}
     <input type="text" name="search" placeholder="Enter patient name">
     <input type="submit" value="Search">
   </form>
