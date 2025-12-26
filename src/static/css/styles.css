@@ -60,3 +60,22 @@ body{
 #patients_container{
     text-align: center;  
 }
+
+.btn {
+ background-color: #4988c3; /* Green background */
+ border: none; /* Remove default border */
+ color: white; /* White text */
+ padding: 14px 28px; /* Space inside button */
+ text-align: center;
+ font-size: 16px;
+ border-radius: 8px; /* Rounded corners */
+ cursor: pointer; /* Pointer on hover */
+ transition: background-color 0.3s, transform 0.2s; /* Smooth effects */
+}
+.btn:hover {
+ background-color: #190aef; /* Darker green on hover */
+ transform: translateY(-2px); /* Slight lift effect */
+}
+.btn:active {
+ transform: translateY(0); /* Pressed effect */
+}

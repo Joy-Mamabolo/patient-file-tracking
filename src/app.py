@@ -39,7 +39,7 @@ class PatientForm(FlaskForm):
 class add_PatientForm(FlaskForm):
     name = StringField('Name', [validators.InputRequired()])
     dob = DateField('Date of Birth', [validators.InputRequired()], format='%Y-%m-%d')
-    status = IntegerField('Status', [validators.InputRequired()])
+    status_id = IntegerField('Status', [validators.InputRequired()])
 
 @app.route('/')
 # Implement login functionality later
@@ -69,14 +69,18 @@ def patients():
         return render_template('patients.html',form = form)
     elif request.method == 'POST':
         # Handle adding new patient and mark patient file as "out"
-        form = PatientForm(request.form)
+        form = add_PatientForm(request.form)
         message = "" # Placeholder for user feedback messages
 
-        if form.validate():
+        print(request.form)
+
+        if form.validate_on_submit():
             name = form.name.data
             dob = form.dob.data
-            message = add_patient_file(name, dob)
-        pass
+            status = form.status_id.data
+            message = add_patient_file(name, dob, status)
+        
+        return render_template('add_patients.html', form=form, message=message, statuses=models.Status.query.all())
     return redirect(url_for('home')) # Not sure if this is needed
 
 @app.route('/add_patient')
@@ -84,13 +88,13 @@ def add_patient():
     
     form = add_PatientForm()
     
-    return render_template('add_patient.html', form=form, statuses=models.Status.query.all())
+    return render_template('add_patients.html', form=form, statuses=models.Status.query.all())
 
 # Implement modify_staff route later
 
 #Functions Section - To be decided if they should be here or in a separate file
 # Function to add a new patient file
-def add_patient_file(name, new_dob):
+def add_patient_file(name, new_dob, status):
     # In the workflow, the user will have determined that a new patient file is required
 
     from models import PatientFile
@@ -99,7 +103,7 @@ def add_patient_file(name, new_dob):
         new_file = PatientFile(
             patient_name=name,
             dob=new_dob,
-            status_id=1  # Assuming '1' corresponds to the "file out" status in the statuses table
+            status_id=status  # Assuming '1' corresponds to the "file out" status in the statuses table
         )
 
         db.session.add(new_file)
