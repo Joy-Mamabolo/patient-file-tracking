@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Add New Patient</h1>
+  <form method="POST" action="/patients">
+    {{ form.hidden_tag() }}
+    <label for="patient_name">Patient Name:</label><br>
+    <input type="text" id="patient_name" name="patient_name" required><br><br>
+    
+    <label for="dob">Date of Birth (YYYY-MM-DD):</label><br>
+    <input type="date" id="dob" name="dob" required><br><br>
+    
+    <label for="status_id">Status:</label><br>
+    <select id="status_id" name="status_id" required>
+      {% for status in statuses %}
+        <option value="{{ status.status_id }}">{{ status.status_name }}</option>
+      {% endfor %}
+    </select><br><br>
+    
+    <input type="submit" value="Add Patient">
+  </form>
+{% endblock %}

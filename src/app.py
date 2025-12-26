@@ -56,10 +56,6 @@ def patients():
 
         search_name = request.args.get('search')
 
-        test = models.Status.query.all()
-
-        print(test[0])
-
         if search_name:
 
             # Perform search in the database

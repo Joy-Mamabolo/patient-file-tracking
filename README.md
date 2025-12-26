@@ -60,6 +60,9 @@ a) Super-user: Has the rights to add/delete staff members to/from the database, 
 b) General_staff: Has permission to change status of patient_file and to indicate if patient has been admitted.
 c) Clerk: Has rights to add new patients in addition to General_staff permissions.
 
-A permissions table, could have been included to make it possible for staff members to have more than one type of permission. For simplicity, this was not implemented, and can be looked at a later stage if deemed necessary. The department and status tables were added because those can forseeably change based on the client's needs, and having separate tables for them will allow that to happen smoothly.
+A permissions table, could have been included to make it possible for staff members to have more than one type of permission. For simplicity, this was not implemented, and can be looked at a later stage if deemed necessary. The department and status tables were added because those can forseeably change based on the client's needs, and having separate tables for them will allow that to happen smoothly. In the current implementation, the following are the existing status names and their meaning:
+a) Checked In - Meaning file is in the records department
+b) Checked Out - File has been released from the records department
+c) Admitted - File is out of the records department, and patient has been admitted. This file is excluded from overdue reporting
 
 The program is using SQLite for development and initial testing. For the current scope, SQLite will suffice in production as well, however, the program is developed with portability in mind should it need to be scaled up.
