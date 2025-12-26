@@ -1,4 +1,5 @@
 from app import db
+from sqlalchemy import CheckConstraint
 
 class department(db.Model):
     __tablename__ = 'departments'
@@ -15,6 +16,11 @@ class Staff(db.Model):
     department_id = db.Column(db.Integer, db.ForeignKey('departments.department_id'), nullable=False) # e.g., Radiology, Cardiology etc. Will be programmed to only allow certain values
     permissions = db.Column(db.String(100), nullable=False) # e.g., Super-user, Standard User etc. Will be programmed to only allow certain values
 
+    __table_args__ = (
+        CheckConstraint("permissions IN ('Super-user', 'Standard User','Special User')",
+        name = "check_permissions"),
+    )
+
     def __repr__(self):
         return f"<Staff {self.name} - {self.department_id}>"
 class Status(db.Model):
@@ -29,7 +35,7 @@ class PatientFile(db.Model):
     __tablename__ = 'patient_files'
     file_no = db.Column(db.Integer, primary_key=True, autoincrement=True) # Unique file number for each patient file
     patient_name = db.Column(db.String(100), nullable=False)
-    dob = db.Column(db.String(100), nullable=False) # Date of Birth to help distinguish patients with similar names
+    dob = db.Column(db.Date, nullable=False) # Date of Birth to help distinguish patients with similar names
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.status_id'), nullable=False) # Current status of the file
 
     def __repr__(self):
