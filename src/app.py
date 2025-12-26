@@ -15,16 +15,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, DateField, validators, PasswordField
+from wtforms import StringField, IntegerField, DateField, validators, PasswordField
 import config
+from extensions import db
 
 #initialize Flask app
 app = Flask(__name__)
 app.config.from_object(config)
 
 #initialize SQLAlchemy
-db = SQLAlchemy(app)
-
+db.init_app(app)
 # Import models after initializing db to avoid circular imports
 import models
 
@@ -36,6 +36,10 @@ class PatientForm(FlaskForm):
     name = StringField('Name', [validators.InputRequired()])
     dob = DateField('Date of Birth', [validators.InputRequired()], format='%Y-%m-%d')
 
+class add_PatientForm(FlaskForm):
+    name = StringField('Name', [validators.InputRequired()])
+    dob = DateField('Date of Birth', [validators.InputRequired()], format='%Y-%m-%d')
+    status = IntegerField('Status', [validators.InputRequired()])
 
 @app.route('/')
 # Implement login functionality later
@@ -50,6 +54,22 @@ def patients():
         # Handle search query
         form = PatientForm()
 
+        search_name = request.args.get('search')
+
+        test = models.Status.query.all()
+
+        print(test[0])
+
+        if search_name:
+
+            # Perform search in the database
+            results = models.PatientFile.query.filter(models.PatientFile.patient_name == search_name).all()
+
+            if results:
+                return render_template('patients.html', form=form, patients=results)
+            else:
+                return render_template('patients.html', form=form, patients = None, search=search_name)
+
         return render_template('patients.html',form = form)
     elif request.method == 'POST':
         # Handle adding new patient and mark patient file as "out"
@@ -62,6 +82,13 @@ def patients():
             message = add_patient_file(name, dob)
         pass
     return redirect(url_for('home')) # Not sure if this is needed
+
+@app.route('/add_patient')
+def add_patient():
+    
+    form = add_PatientForm()
+    
+    return render_template('add_patient.html', form=form, statuses=models.Status.query.all())
 
 # Implement modify_staff route later
 

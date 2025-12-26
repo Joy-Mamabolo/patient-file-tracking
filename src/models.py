@@ -1,13 +1,12 @@
 from app import db
-from sqlalchemy import CheckConstraint
 
-class department(db.Model):
+class Department(db.Model):
     __tablename__ = 'departments'
     department_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     department_name = db.Column(db.String(50), nullable=False, unique=True) # e.g., Radiology, Cardiology etc.
 
     #Relationships
-    staff_members = db.relationship('Staff', back_populates='department', uselist=False)  # Assume staff members belong to one department
+    staff_members = db.relationship('Staff', back_populates='department') 
 
     def __repr__(self):
         return f"<Department {self.department_name}>"
@@ -20,12 +19,12 @@ class Staff(db.Model):
     permissions = db.Column(db.String(100), nullable=False) # e.g., Super-user, Standard User etc. Will be programmed to only allow certain values
 
     #Relationships
-    department = db.relationship('department', back_populates='staff_members', uselist=False) # Assume staff members belong to one department
+    department = db.relationship('Department', back_populates='staff_members') # Assume staff members belong to one department
 
 
 
     __table_args__ = (
-        CheckConstraint("permissions IN ('Super-user', 'Standard User','Special User')",
+        db.CheckConstraint("permissions IN ('Super-user', 'Standard User','Special User')",
         name = "check_permissions"),
     )
 
