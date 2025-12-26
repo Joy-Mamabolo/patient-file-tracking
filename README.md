@@ -21,8 +21,9 @@ be tested in a real hospital setting and feedback incorporated in future version
 Stage 2 will introduce the roles of super-user and general staff. Super-user is critical, however the general staff access will be workshopped with the clients for final inclusion decision. The following are stage2 deliverables:
 
 - Generate daily report with a list of overdue files and other metrics (TBC with client)
-- Program Super-user functionality
+- Program Super-user functionality and file logs view for the Super-user
 - Program General-staff access (if approved)
+- Potentially implement scanning UI
   
 If the General-staff access is approved, then stage 3 will include data analytics that can indicate patient wait times within the hospital as a whole and/or between departments. Otherwise, stage 3 may only include suggested new features from clients and bug fixes. 
 
@@ -56,7 +57,7 @@ The database consists of the following tables with the given columns:
 
 The staff table stores the staff_ID - set up currently as a autoincrement primary key, but can later be changed to match actual staff ids if they exist. 
 The staff table also has a Permissions column that gives staff members different permissions in the system as follows:
-a) Super-user: Has the rights to add/delete staff members to/from the database, and to assign/revoke user permissions.
+a) Super-user: Has the rights to add/delete staff members to/from the database, and to assign/revoke user permissions. Will also have access to patient file logs.
 b) General_staff: Has permission to change status of patient_file and to indicate if patient has been admitted.
 c) Clerk: Has rights to add new patients in addition to General_staff permissions.
 

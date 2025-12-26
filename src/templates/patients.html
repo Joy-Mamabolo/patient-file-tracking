@@ -10,20 +10,20 @@
    {{ form.hidden_tag() }}
     <input type="text" name="search" placeholder="Enter patient name">
     <input type="submit" value="Search">
-  </form>
-
+  </form> <br>
   {% if patients %}
     <h3>Search Results:</h3>
-    <ul>
+    <ul class = "section">
       {% for patient in patients %}
         <li>{{ patient.patient_name }} - DOB: {{ patient.dob }} - Status: {{patient.status.status_name }}</li>
 
         <!-- Add status change buttons next to each record for the scenario where the right file is found -->
 
-      {% endfor %}
+      {% endfor %} <br><br>
     </ul>
+    <a href="/add_patient">Patient not on the list?</a>
   {% elif search %}
-    <p>No patients found matching "{{ search }}".</p> <br><br>
+    <p>No patients found matching "{{ search }}".</p>
 
     <h2><a href="/add_patient" class="btn" id = "add_patient_link">Add New Patient</a></h2>
   {% endif %}
