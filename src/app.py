@@ -93,6 +93,32 @@ def add_patient():
     
     return render_template('add_patients.html', form=form, statuses=models.Status.query.all())
 
+@app.route('/change_status/<int:file_no>', methods=['POST'])
+def change_status(file_no):
+
+    # retrieve the patient file by file_no
+    from models import PatientFile, Status
+
+    patient_file = PatientFile.query.get(file_no)
+
+    if not patient_file:
+        return "Patient file not found.", 404
+
+    if patient_file.status_id == 1:  # Assuming status_id=1 corresponds to "Checked In"
+        patient_file.status_id = 2  # Assuming status_id=2 corresponds to "Checked Out"
+    else:
+        patient_file.status_id = 1  # Change back to "Checked In"
+    
+    db.session.commit()
+
+    add_file_log(file_no, 1, patient_file.status_id, "1")  # staff_id and timestamp to be implemented later
+
+    #debug
+    logs = models.FileLog.query.filter_by(file_no=file_no).all()
+    print(logs[-1])
+
+    return redirect(url_for('patients'))
+
 # Implement modify_staff route later
 
 #Functions Section - To be decided if they should be here or in a separate file
@@ -115,8 +141,26 @@ def add_patient_file(name, new_dob, status):
     
     except Exception as e:
         db.session.rollback()
-        return f"Error adding patient file: {str(e)}, please try again."
+        return f"Error adding patient file, please try again."
 
+def add_file_log(file_no, staff_id, status_id, timestamp):
+    from models import FileLog
+
+    try:
+        new_log = FileLog(
+            file_no=file_no, # type: ignore
+            staff_id=staff_id, # type: ignore
+            status_id=status_id, # type: ignore
+            timestamp=timestamp # type: ignore
+        )
+
+        db.session.add(new_log)
+        db.session.commit()
+        return "File log added successfully."
+    
+    except Exception as e:
+        db.session.rollback()
+        return f"Error adding file log, please try again."
 
 
 if __name__ == '__main__':

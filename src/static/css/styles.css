@@ -101,3 +101,10 @@ table, th, td {
 ul.section li{
     margin-bottom: 10px;
 }
+li form{
+    display: inline;
+    margin: 0;
+}
+li button {
+    margin-left: 8px; /* spacing between text and button */
+}
