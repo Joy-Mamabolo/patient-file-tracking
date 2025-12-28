@@ -9,14 +9,12 @@
             <tr>
                 <th>Patient Name</th>
                 <th>File Number</th>
-                <th>Timestamp</th>
                 
             </tr>
             {% for file in out_files %}
             <tr>
                 <td>{{ file.patient_name }}</td>
                 <td>{{ file.file_no }}</td>
-                <td>{{ file.timestamp}}</td>
             </tr>
             {% endfor %}
         </table>

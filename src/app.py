@@ -44,7 +44,10 @@ class add_PatientForm(FlaskForm):
 @app.route('/')
 # Implement login functionality later
 def home():
-    return render_template('home.html') # Render the home page template. Pass required data later.
+    from models import PatientFile, Status
+
+    out_files = PatientFile.query.join(Status).filter(Status.status_name == "Checked Out").all() # Assuming status_id=1 corresponds to "Out"
+    return render_template('home.html', out_files = out_files) # Render the home page template. Pass required data later.
 
 @app.route('/patients', methods=['GET', 'POST'])
 # Implement login functionality later
@@ -101,9 +104,9 @@ def add_patient_file(name, new_dob, status):
 
     try:
         new_file = PatientFile(
-            patient_name=name,
-            dob=new_dob,
-            status_id=status  # Assuming '1' corresponds to the "file out" status in the statuses table
+            patient_name=name, # type: ignore
+            dob=new_dob, # type: ignore
+            status_id=status  # type: ignore
         )
 
         db.session.add(new_file)
