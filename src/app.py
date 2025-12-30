@@ -11,25 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from src import create_app, db, models
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, validators, PasswordField
-import config
-from extensions import db
+from src.models import PatientFile,Status, FileLog
 
-#initialize Flask app
-app = Flask(__name__)
-app.config.from_object(config)
-
-#initialize SQLAlchemy
-db.init_app(app)
-# Import models after initializing db to avoid circular imports
-import models
-
-with app.app_context():
-    db.create_all()  # Create database tables if they don't exist
+app = create_app("src.config.Config")
 
 # define forms
 class PatientForm(FlaskForm):
@@ -44,7 +32,7 @@ class add_PatientForm(FlaskForm):
 @app.route('/')
 # Implement login functionality later
 def home():
-    from models import PatientFile, Status
+    #from src.models import PatientFile, Status
 
     out_files = PatientFile.query.join(Status).filter(Status.status_name == "Checked Out").all() # Assuming status_id=1 corresponds to "Out"
     return render_template('home.html', out_files = out_files) # Render the home page template. Pass required data later.
@@ -97,7 +85,7 @@ def add_patient():
 def change_status(file_no):
 
     # retrieve the patient file by file_no
-    from models import PatientFile, Status
+    #from src.models import PatientFile, Status
 
     patient_file = PatientFile.query.get(file_no)
 
@@ -114,7 +102,7 @@ def change_status(file_no):
     add_file_log(file_no, 1, patient_file.status_id, "1")  # staff_id and timestamp to be implemented later
 
     #debug
-    logs = models.FileLog.query.filter_by(file_no=file_no).all()
+    logs = FileLog.query.filter_by(file_no=file_no).all()
     print(logs[-1])
 
     return redirect(url_for('patients'))
@@ -126,7 +114,7 @@ def change_status(file_no):
 def add_patient_file(name, new_dob, status):
     # In the workflow, the user will have determined that a new patient file is required
 
-    from models import PatientFile
+    #from src.models import PatientFile
 
     try:
         new_file = PatientFile(
@@ -144,7 +132,7 @@ def add_patient_file(name, new_dob, status):
         return f"Error adding patient file, please try again."
 
 def add_file_log(file_no, staff_id, status_id, timestamp):
-    from models import FileLog
+    #from models import FileLog
 
     try:
         new_log = FileLog(
