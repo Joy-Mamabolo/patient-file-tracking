@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from src import create_app, db, models
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import render_template, request, redirect, url_for, flash, abort
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, timezone
+from sqlalchemy import func
 from src.models import PatientFile,Status, FileLog
 from src.config import Config
 from flask_login import(
@@ -113,8 +114,28 @@ def add_staff():
 def home():
     #from src.models import PatientFile, Status
 
-    out_files = PatientFile.query.join(Status).filter(Status.status_name == "Checked Out").all() # Assuming status_id=1 corresponds to "Out"
-    return render_template('home.html', out_files = out_files) # Render the home page template. Pass required data later.
+    # Subquery to return the latest timestamp of all files to be used to extract the latest timestamp of checked out files
+    latest_log_subq = db.session.query(models.FileLog.file_no,
+                                       func.max(models.FileLog.timestamp).label("latest_timestamp")
+                                       ).group_by(models.FileLog.file_no).subquery()
+    
+    # Join above subquery to PatientFile entries filtered for "checked out" statuses
+    query = (db.session.query(PatientFile, latest_log_subq.c.latest_timestamp)
+                 .join(Status)
+                 .join(latest_log_subq, PatientFile.file_no==latest_log_subq.c.file_no)
+                 .filter(Status.status_name=="Checked Out"))
+
+
+    out_files = query.all() # Checked out files view
+
+    # Overdue files
+    overdue_files = []
+
+    for file in out_files:
+        if is_overdue(file[1]):
+            overdue_files.append(file)
+
+    return render_template('home.html', out_files = out_files, overdue_files=overdue_files) # Render the home page template. Pass required data later.
 
 @app.route('/patients', methods=['GET', 'POST'])
 @login_required # Login implementation
@@ -231,6 +252,19 @@ def add_file_log(file_no, staff_id, status_id):
     except Exception as e:
         db.session.rollback()
         return f"Error adding file log, please try again."
+
+def is_overdue(dt):
+    # Function determines if a file is overdue and returns True or False
+
+    OVERDUE_INTERVAL = 30 #minutes for testing, to be changed to 24 hours for production
+
+    now = datetime.now(timezone.utc)
+    diff = now-dt
+
+    if diff.total_seconds()>=OVERDUE_INTERVAL: # Fix this line when
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':

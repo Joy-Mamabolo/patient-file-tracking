@@ -7,14 +7,18 @@
     {% if out_files %}
         <table>
             <tr>
-                <th>Patient Name</th>
                 <th>File Number</th>
+                <th>Patient Name</th>
+                <th>Check_out Timestamp</th>
+                
                 
             </tr>
             {% for file in out_files %}
             <tr>
-                <td>{{ file.patient_name }}</td>
-                <td>{{ file.file_no }}</td>
+                <td>{{ file[0].patient_name }}</td>
+                <td>{{ file[0].file_no }}</td>
+                <td>{{file[1].latest_timestamp}}</td>
+
             </tr>
             {% endfor %}
         </table>
