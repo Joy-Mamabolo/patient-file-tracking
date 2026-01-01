@@ -3,19 +3,33 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<div id = "patients_container">
   <h2>Login</h2>
   <form method="POST" action="{{ url_for('login') }}">
     {{ form.hidden_tag() }}
     <div>
-      {{ form.username.label }}<br>
-      {{ form.username(size=32) }}
+      {{ form.username.label }}
+      {{ form.username() }}
+      <br><br>
     </div>
     <div>
-      {{ form.password.label }}<br>
-      {{ form.password(size=32) }}
+      {{ form.password.label }}
+      {{ form.password() }}
+      <br><br>
+      {% with messages = get_flashed_messages(category_filter = ["warning", "danger"], with_categories = True)%}
+        {% if messages%}
+        <div class = "flashes">
+          {%for category, message in messages %}
+          <div class = "alert alert-{{category}}">{{message}}</div>
+          {%endfor%}
+          </div>
+        {%endif%}
+      {%endwith%}
     </div>
     <div>
-      {{ form.submit() }}
+      <br>
+      {{ form.submit(class = "btn") }}
     </div>
   </form>
+</div>
 {% endblock %}

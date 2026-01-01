@@ -108,3 +108,6 @@ li form{
 li button {
     margin-left: 8px; /* spacing between text and button */
 }
+.alert-danger{
+    color: red
+}

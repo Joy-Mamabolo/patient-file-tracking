@@ -1,4 +1,5 @@
 from src.extensions import db
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class Department(db.Model):
@@ -12,7 +13,7 @@ class Department(db.Model):
     def __repr__(self):
         return f"<Department {self.department_name}>"
 
-class Staff(db.Model):
+class Staff(db.Model, UserMixin):
     __tablename__ = 'staff'
     staff_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -20,7 +21,7 @@ class Staff(db.Model):
     permissions = db.Column(db.String(100), nullable=False) # e.g., Super-user, Standard User etc. Will be programmed to only allow certain values
 
     #implement login capabilities
-    username = db.Column(db.String(100), nullable = False)
+    username = db.Column(db.String(100), nullable = False, unique = True)
     password_hash = db.Column(db.String(255), nullable = False)
 
     #Relationships
@@ -32,6 +33,9 @@ class Staff(db.Model):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def get_id(self):
+        return str(self.staff_id)
 
 
 

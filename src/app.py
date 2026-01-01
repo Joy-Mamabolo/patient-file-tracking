@@ -12,13 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from src import create_app, db, models
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, DateField, validators, PasswordField
+from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField
 from src.models import PatientFile,Status, FileLog
 from src.config import Config
+from flask_login import(
+    LoginManager,
+    login_user,
+    login_required,
+    logout_user,
+    current_user,
+    UserMixin  
+)
 
 app = create_app(Config)
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+login_manager.login_message_category = "info"
 
 # define forms
 class PatientForm(FlaskForm):
@@ -30,6 +41,62 @@ class add_PatientForm(FlaskForm):
     dob = DateField('Date of Birth', [validators.InputRequired()], format='%Y-%m-%d')
     status_id = IntegerField('Status', [validators.InputRequired()])
 
+class login_form(FlaskForm):
+    username = StringField('Username', [validators.InputRequired()])
+    password = PasswordField('Password', [validators.InputRequired()])
+    submit = SubmitField('Submit')
+
+
+@login_manager.user_loader
+def load_user(staff_id):
+    return db.session.get(models.Staff, int(staff_id))
+
+
+@app.route('/login', methods = ['GET', 'POST']) #Login Screen route
+def login():
+
+    if current_user.is_authenticated:
+        next_page = request.args.get('next')
+        return redirect(next_page or url_for('home'))
+
+    form = login_form()
+
+    if request.method == "POST":
+
+        if form.validate_on_submit():
+
+            user = models.Staff.query.filter_by(username = form.username.data).first()
+
+            print(form.data)
+
+            if user and user.check_password(form.password.data):
+                login_user(user)
+                next_page = request.args.get('next')
+                
+                return redirect(next_page or url_for('home'))
+            else:
+                flash("Invalid username and password.", 'danger')
+
+    return render_template("login.html", form = form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("home"))
+
+
+@app.route('/update_login', methods=['GET','POST'])
+def update_login():
+    return render_template("")
+
+# To be implemented later
+@app.route('/add_staff', methods = ["GET","POST"])
+@login_required
+def add_staff():
+    return render_template("")
+
+
 @app.route('/')
 # Implement login functionality later
 def home():
@@ -39,7 +106,7 @@ def home():
     return render_template('home.html', out_files = out_files) # Render the home page template. Pass required data later.
 
 @app.route('/patients', methods=['GET', 'POST'])
-# Implement login functionality later
+@login_required # Login implementation
 def patients():
 
     if request.method == 'GET':
@@ -76,6 +143,7 @@ def patients():
     return redirect(url_for('home')) # Not sure if this is needed
 
 @app.route('/add_patient')
+@login_required #login implementation
 def add_patient():
     
     form = add_PatientForm()
@@ -83,6 +151,7 @@ def add_patient():
     return render_template('add_patients.html', form=form, statuses=models.Status.query.all())
 
 @app.route('/change_status/<int:file_no>', methods=['POST'])
+@login_required
 def change_status(file_no):
 
     # retrieve the patient file by file_no
