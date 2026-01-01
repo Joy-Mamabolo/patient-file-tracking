@@ -16,8 +16,9 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, validators, PasswordField
 from src.models import PatientFile,Status, FileLog
+from src.config import Config
 
-app = create_app("src.config.Config")
+app = create_app(Config)
 
 # define forms
 class PatientForm(FlaskForm):

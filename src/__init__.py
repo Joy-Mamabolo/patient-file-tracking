@@ -2,7 +2,7 @@ from flask import Flask
 from src import config
 from src.extensions import db, migrate
 
-def create_app(config_class = "src.config.Config"):
+def create_app(config_class):
     app = Flask(__name__)
     if config_class:
         app.config.from_object(config_class)
