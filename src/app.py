@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from src import create_app, db, models
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField
+from functools import wraps
 from src.models import PatientFile,Status, FileLog
 from src.config import Config
 from flask_login import(
@@ -51,6 +52,16 @@ class login_form(FlaskForm):
 def load_user(staff_id):
     return db.session.get(models.Staff, int(staff_id))
 
+# Authorization decorator
+def Role_Required(*role):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args,**kwargs):
+            if not current_user.permissions in role:
+                abort(403)
+            return fn(*args, *kwargs)
+        return decorated_view
+    return wrapper
 
 @app.route('/login', methods = ['GET', 'POST']) #Login Screen route
 def login():
@@ -67,12 +78,10 @@ def login():
 
             user = models.Staff.query.filter_by(username = form.username.data).first()
 
-            print(form.data)
-
             if user and user.check_password(form.password.data):
                 login_user(user)
                 next_page = request.args.get('next')
-                
+
                 return redirect(next_page or url_for('home'))
             else:
                 flash("Invalid username and password.", 'danger')
@@ -93,6 +102,7 @@ def update_login():
 # To be implemented later
 @app.route('/add_staff', methods = ["GET","POST"])
 @login_required
+@Role_Required("Super-user")
 def add_staff():
     return render_template("")
 
@@ -144,6 +154,7 @@ def patients():
 
 @app.route('/add_patient')
 @login_required #login implementation
+@Role_Required("Super-user","Special User")
 def add_patient():
     
     form = add_PatientForm()
