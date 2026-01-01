@@ -1,4 +1,5 @@
 from src.extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Department(db.Model):
     __tablename__ = 'departments'
@@ -18,8 +19,20 @@ class Staff(db.Model):
     department_id = db.Column(db.Integer, db.ForeignKey('departments.department_id'), nullable=False) # e.g., Radiology, Cardiology etc. Will be programmed to only allow certain values
     permissions = db.Column(db.String(100), nullable=False) # e.g., Super-user, Standard User etc. Will be programmed to only allow certain values
 
+    #implement login capabilities
+    username = db.Column(db.String(100), nullable = False)
+    password_hash = db.Column(db.String(255), nullable = False)
+
     #Relationships
     department = db.relationship('Department', back_populates='staff_members') # Assume staff members belong to one department
+
+    # Password methods
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 
 
