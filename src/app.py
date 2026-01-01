@@ -16,6 +16,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, abo
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField
 from functools import wraps
+from datetime import datetime
 from src.models import PatientFile,Status, FileLog
 from src.config import Config
 from flask_login import(
@@ -128,7 +129,7 @@ def patients():
         if search_name:
 
             # Perform search in the database
-            results = models.PatientFile.query.filter(models.PatientFile.patient_name == search_name).all()
+            results = models.PatientFile.query.filter(models.PatientFile.patient_name.ilike(f"%{search_name}%") ).all()
 
             if results:
                 return render_template('patients.html', form=form, patients=results)
@@ -180,11 +181,11 @@ def change_status(file_no):
     
     db.session.commit()
 
-    add_file_log(file_no, 1, patient_file.status_id, "1")  # staff_id and timestamp to be implemented later
+    add_file_log(file_no, current_user.staff_id, patient_file.status_id)
 
     #debug
-    logs = FileLog.query.filter_by(file_no=file_no).all()
-    print(logs[-1])
+    #logs = FileLog.query.filter_by(file_no=file_no).all()
+    #print(logs[-1])
 
     return redirect(url_for('patients'))
 
@@ -212,7 +213,7 @@ def add_patient_file(name, new_dob, status):
         db.session.rollback()
         return f"Error adding patient file, please try again."
 
-def add_file_log(file_no, staff_id, status_id, timestamp):
+def add_file_log(file_no, staff_id, status_id):
     #from models import FileLog
 
     try:
@@ -220,7 +221,7 @@ def add_file_log(file_no, staff_id, status_id, timestamp):
             file_no=file_no, # type: ignore
             staff_id=staff_id, # type: ignore
             status_id=status_id, # type: ignore
-            timestamp=timestamp # type: ignore
+            #timestamp=timestamp # No longer necessary. A default time now will be captured in the utc timezone
         )
 
         db.session.add(new_log)

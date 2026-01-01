@@ -1,6 +1,7 @@
 from src.extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timezone
 
 class Department(db.Model):
     __tablename__ = 'departments'
@@ -76,7 +77,7 @@ class FileLog(db.Model):
     log_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     file_no = db.Column(db.Integer, db.ForeignKey('patient_files.file_no'), nullable=False)
     staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), nullable=False)
-    timestamp = db.Column(db.String(100), nullable=False) # Timestamp of the log entry
+    timestamp = db.Column(db.DateTime, default = lambda: datetime.now(timezone.utc) ) # Timestamp of the log entry
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.status_id'), nullable=False) # Status of the file after this log entry
 
     # Relationships to be implemented later if needed
