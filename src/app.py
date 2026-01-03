@@ -16,7 +16,7 @@ from flask import render_template, request, redirect, url_for, flash, abort
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField
 from functools import wraps
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
 from src.models import PatientFile,Status, FileLog
 from src.config import Config
@@ -108,6 +108,9 @@ def update_login():
 def add_staff():
     return render_template("")
 
+# Global Variable for overdue interval
+OVERDUE_INTERVAL = 24*60*60# Takes only seconds. All other units must be converted. Currently 24hrs
+
 
 @app.route('/')
 # Implement login functionality later
@@ -130,12 +133,18 @@ def home():
 
     # Overdue files
     overdue_files = []
+    due_date = []
 
     for file in out_files:
+
         if is_overdue(file[1]):
+            overdue_date = file[1] + timedelta(seconds = OVERDUE_INTERVAL)
+            overdue_by = datetime.now().replace(tzinfo=None) - overdue_date
+
+            due_date.append((overdue_date, overdue_by.days))
             overdue_files.append(file)
 
-    return render_template('home.html', out_files = out_files, overdue_files=overdue_files) # Render the home page template. Pass required data later.
+    return render_template('home.html', out_files = out_files, overdue_files=zip(overdue_files, due_date)) # Render the home page template. Pass required data later.
 
 @app.route('/patients', methods=['GET', 'POST'])
 @login_required # Login implementation
@@ -256,10 +265,18 @@ def add_file_log(file_no, staff_id, status_id):
 def is_overdue(dt):
     # Function determines if a file is overdue and returns True or False
 
-    OVERDUE_INTERVAL = 30 #minutes for testing, to be changed to 24 hours for production
+    
 
     now = datetime.now(timezone.utc)
-    diff = now-dt
+
+    # For difference calculation, make both dates timezone naive, since they are both consistently UTC. 
+    # Even though this may not be the timezone of the user, it is irrelevant when calculating the difference
+
+    now_naive = now.replace(tzinfo = None)
+    dt_naive = dt.replace(tzinfo = None)
+
+
+    diff = now_naive-dt_naive
 
     if diff.total_seconds()>=OVERDUE_INTERVAL: # Fix this line when
         return True
