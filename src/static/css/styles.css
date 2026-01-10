@@ -111,3 +111,6 @@ li button {
 .alert-danger{
     color: red
 }
+#qr_btn{
+    text-decoration: none;
+}

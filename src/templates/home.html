@@ -15,8 +15,8 @@
             </tr>
             {% for file in out_files %}
             <tr>
-                <td>{{ file[0].patient_name }}</td>
                 <td>{{ file[0].file_no }}</td>
+                <td>{{ file[0].patient_name }}</td>
                 <td>{{file[1].strftime("%Y-%m-%d %H:%M")}}</td>
 
             </tr>
@@ -33,16 +33,17 @@
     {% if overdue_files %}
         <table>
             <tr>
-                <th>Patient Name</th>
+                
                 <th>File Number</th>
+                <th>Patient Name</th>
                 <th>Due Date</th>
                 <th>Overdue by</th>
                 
             </tr>
             {% for file,date in overdue_files %}
             <tr style = "color: red;">
-                <td>{{ file[0].patient_name }}</td>
                 <td>{{ file[0].file_no }}</td>
+                <td>{{ file[0].patient_name }}</td>
                 <td>{{ date[0].strftime("%Y-%m-%d")}}</td> <!-- Timestamp +24hrs to show due dat -->
                 <td>{%if date[1]<1 %}
                     &lt;1 day

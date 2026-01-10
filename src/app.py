@@ -20,6 +20,14 @@ from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
 from src.models import PatientFile,Status, FileLog
 from src.config import Config
+
+#QR code imports
+import os
+import qrcode
+from io import BytesIO
+from flask import send_file
+
+# Login imports
 from flask_login import(
     LoginManager,
     login_user,
@@ -33,6 +41,8 @@ app = create_app(Config)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
+
+BASE_URL = os.getenv("BASE_URL","http://192.168.0.134:5000")
 
 # define forms
 class PatientForm(FlaskForm):
@@ -108,6 +118,7 @@ def update_login():
 def add_staff():
     return render_template("")
 
+
 # Global Variable for overdue interval
 OVERDUE_INTERVAL = 24*60*60# Takes only seconds. All other units must be converted. Currently 24hrs
 
@@ -172,7 +183,7 @@ def patients():
         form = add_PatientForm(request.form)
         message = "" # Placeholder for user feedback messages
 
-        print(request.form)
+        #print(request.form) #debug
 
         if form.validate_on_submit():
             name = form.name.data
@@ -219,6 +230,22 @@ def change_status(file_no):
 
     return redirect(url_for('patients'))
 
+@app.route("/regen_qr/<int:file_no>")
+@login_required
+@Role_Required("Super-user","Special User")
+def regen_qr(file_no):
+
+    #debug
+    print(file_no)
+
+    return generate_qr(file_no)
+    
+
+
+@app.route("/file/<int:file_id>")
+def scan_qr(file_id):
+    return f"You scanned the following file {file_id}"
+
 # Implement modify_staff route later
 
 #Functions Section - To be decided if they should be here or in a separate file
@@ -237,7 +264,8 @@ def add_patient_file(name, new_dob, status):
 
         db.session.add(new_file)
         db.session.commit()
-        return "Patient file added successfully."
+
+        return generate_qr(new_file.file_no)
     
     except Exception as e:
         db.session.rollback()
@@ -283,6 +311,18 @@ def is_overdue(dt):
     else:
         return False
 
+def generate_qr(file_id):
+    url = f"{BASE_URL}/file/{file_id}"
+
+    #generate qr code
+    qr_img = qrcode.make(url)
+
+    #Save to in-memory buffer
+    buf = BytesIO()
+    qr_img.save(buf, format = "PNG")
+    buf.seek(0)
+
+    return send_file(buf, mimetype = "image/png", as_attachment=True, download_name=f"{file_id}.png")
 
 if __name__ == '__main__':
     app.run(debug=True)
