@@ -42,7 +42,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
-BASE_URL = os.getenv("BASE_URL","http://192.168.0.134:5000")
+# BASE_URL = os.getenv("BASE_URL","http://192.168.0.134:5000")
+BASE_URL = os.getenv("BASE_URL","http://10.107.3.207:5000")
 
 # define forms
 class PatientForm(FlaskForm):
@@ -71,7 +72,7 @@ def Role_Required(*role):
         def decorated_view(*args,**kwargs):
             if not current_user.permissions in role:
                 abort(403)
-            return fn(*args, *kwargs)
+            return fn(*args, **kwargs)
         return decorated_view
     return wrapper
 
@@ -189,7 +190,7 @@ def patients():
             name = form.name.data
             dob = form.dob.data
             status = form.status_id.data
-            message = add_patient_file(name, dob, status)
+            add_patient_file(name, dob, status)
         
         return render_template('add_patients.html', form=form, message=message, statuses=models.Status.query.all())
     return redirect(url_for('home')) # Not sure if this is needed
@@ -230,21 +231,22 @@ def change_status(file_no):
 
     return redirect(url_for('patients'))
 
-@app.route("/regen_qr/<int:file_no>")
+@app.route("/regen_qr/<int:file_id>")
 @login_required
 @Role_Required("Super-user","Special User")
-def regen_qr(file_no):
+def regen_qr(file_id):
 
     #debug
-    print(file_no)
+    print(file_id)
 
-    return generate_qr(file_no)
+    return generate_qr(file_id)
     
 
 
 @app.route("/file/<int:file_id>")
 def scan_qr(file_id):
-    return f"You scanned the following file {file_id}"
+    print(file_id) #debug
+    return f"<h1>You scanned the following file {file_id}</h1>"
 
 # Implement modify_staff route later
 
@@ -265,7 +267,9 @@ def add_patient_file(name, new_dob, status):
         db.session.add(new_file)
         db.session.commit()
 
-        return generate_qr(new_file.file_no)
+        print(new_file.file_no) #debug
+
+        generate_qr(new_file.file_no)
     
     except Exception as e:
         db.session.rollback()
@@ -314,6 +318,8 @@ def is_overdue(dt):
 def generate_qr(file_id):
     url = f"{BASE_URL}/file/{file_id}"
 
+    print(url) #debug
+
     #generate qr code
     qr_img = qrcode.make(url)
 
@@ -325,4 +331,4 @@ def generate_qr(file_id):
     return send_file(buf, mimetype = "image/png", as_attachment=True, download_name=f"{file_id}.png")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host = "0.0.0.0",port = 5000, debug=True)
