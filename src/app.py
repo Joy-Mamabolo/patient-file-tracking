@@ -205,8 +205,9 @@ def add_patient():
     return render_template('add_patients.html', form=form, statuses=models.Status.query.all())
 
 @app.route('/change_status/<int:file_no>', methods=['POST'])
+@app.route('/change_status/<int:file_no>/admit', methods=['POST'])
 @login_required
-def change_status(file_no):
+def change_status(file_no, admit = False):
 
     # retrieve the patient file by file_no
     #from src.models import PatientFile, Status
@@ -215,15 +216,19 @@ def change_status(file_no):
 
     if not patient_file:
         return "Patient file not found.", 404
-
-    if patient_file.status_id == 1:  # Assuming status_id=1 corresponds to "Checked In"
-        patient_file.status_id = 2  # Assuming status_id=2 corresponds to "Checked Out"
+    if not admit:
+        if patient_file.status_id == 1:  # Assuming status_id=1 corresponds to "Checked In"
+            patient_file.status_id = 2  # Assuming status_id=2 corresponds to "Checked Out"
+        else:
+            patient_file.status_id = 1  # Change back to "Checked In"
     else:
-        patient_file.status_id = 1  # Change back to "Checked In"
-    
+        patient_file.status_id = 3 # Status_id = 3 corresponds to admission, and is excluded from overdue reporting on the home page
+
     db.session.commit()
 
     add_file_log(file_no, current_user.staff_id, patient_file.status_id)
+
+    #TODO: Add user feedback messages to the UI to confirm successful status change and patient involved.
 
     #debug
     #logs = FileLog.query.filter_by(file_no=file_no).all()
@@ -243,10 +248,18 @@ def regen_qr(file_id):
     
 
 
-@app.route("/file/<int:file_id>")
+@app.route("/file/<int:file_id>", methods = ["GET", "POST"])
+@login_required
 def scan_qr(file_id):
-    print(file_id) #debug
-    return f"<h1>You scanned the following file {file_id}</h1>"
+    patient = PatientFile.query.get(file_id)
+    last_checkpoint = FileLog.query.filter_by(file_no=file_id).order_by(FileLog.timestamp.desc()).first()
+    
+    #print(patient.patient_name) #debug
+
+    if request.method == "POST":
+        pass
+
+    return render_template("File_track.html", patient = patient, file_log = last_checkpoint)
 
 # Implement modify_staff route later
 

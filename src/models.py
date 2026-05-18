@@ -81,6 +81,7 @@ class FileLog(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.status_id'), nullable=False) # Status of the file after this log entry
 
     # Relationships to be implemented later if needed
+    staff = db.relationship('Staff') # We want to know which staff member and/or which department the file was last with.
 
     def __repr__(self):
         return f"<FileLog File No: {self.file_no} - Status: {self.status_id}>"

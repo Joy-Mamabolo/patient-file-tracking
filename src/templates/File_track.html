@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}File Track{% endblock %}
+
+{% block content %}
+<h2>Patient File_{{ patient.file_no }}: {{ patient.patient_name }}</h2>
+<h2>Status: {{patient.status.status_name}}</h2>
+<h2>
+  {% if file_log %}
+    Last Checkpoint: 
+    {{ file_log.staff.department.department_name ~ "; with " ~ file_log.staff.name ~ "; Timestamp: "~ file_log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
+  {% else %}
+    <p>No record found. The file may not have been checked. If this is incorrect, please return the file to the records department for processing.</p>
+  {% endif %}
+</h2>
+<p><a class = "btn" href ="/change_status/{{patient.file_no}}/admit" method = "POST">Admit Patient</a></p>
+{% endblock %}
