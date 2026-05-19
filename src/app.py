@@ -14,7 +14,7 @@
 from src import create_app, db, models
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField
+from wtforms import StringField, IntegerField, DateField, validators, PasswordField, SubmitField, HiddenField
 from functools import wraps
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
@@ -58,6 +58,7 @@ class add_PatientForm(FlaskForm):
 class login_form(FlaskForm):
     username = StringField('Username', [validators.InputRequired()])
     password = PasswordField('Password', [validators.InputRequired()])
+    next = HiddenField()
     submit = SubmitField('Submit')
 
 
@@ -93,12 +94,12 @@ def login():
 
             if user and user.check_password(form.password.data):
                 login_user(user)
-                next_page = request.args.get('next')
+                next_page = form.next.data
 
                 return redirect(next_page or url_for('home'))
             else:
                 flash("Invalid username and password.", 'danger')
-
+    form.next.data = request.args.get('next')
     return render_template("login.html", form = form)
 
 @app.route('/logout')
