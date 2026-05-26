@@ -230,7 +230,7 @@ def change_status(file_no, admit = False):
     add_file_log(file_no, current_user.staff_id, patient_file.status_id)
 
     #TODO: Add user feedback messages to the UI to confirm successful status change and patient involved.
-
+    message = flash(f"{patient_file.patient_name}'s file status successfully changed!", "success")
     #debug
     #logs = FileLog.query.filter_by(file_no=file_no).all()
     #print(logs[-1])

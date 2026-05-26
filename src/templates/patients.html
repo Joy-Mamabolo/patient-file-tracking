@@ -11,6 +11,17 @@
     <input type="text" name="search" placeholder="Enter patient name">
     <input type="submit" value="Search">
   </form> <br>
+  
+   <!--Add flash message for optional successful status change-->
+  {% with messages = get_flashed_messages(with_categories=true)%}
+    {% for category, message in messages %}
+      {% if message %}
+        <div class = "alert alert-{{category}}">{{message}}</div>
+      
+      {% endif %}
+    {% endfor %}
+  {% endwith %}
+
   {% if patients %}
     <h3>Search Results:</h3>
     <ul class = "section">
