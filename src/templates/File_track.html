@@ -13,5 +13,13 @@
     <p>No record found. The file may not have been checked. If this is incorrect, please return the file to the records department for processing.</p>
   {% endif %}
 </h2>
-<p><a class = "btn" href ="/change_status/{{patient.file_no}}/admit" method = "POST">Admit Patient</a></p>
+<!-- Add a list of buttons for different status changes. Check for current status and only add relevant buttons. Consider also adding a department referral button-->
+  {% if patient.status.status_name != "Admitted" %}
+    <p><a class = "btn" href ="/change_status/{{patient.file_no}}/admit" method = "POST">Admit Patient</a><br><br></p>
+    {% for dept in departments %}
+      {% if file_log and file_log.staff.department.department_id != dept[0] %}
+        <p><a class = "btn" href ="/change_status/{{patient.file_no}}/transfer/{{ dept[0] }}" method = "POST">Transfer to {{ dept[1] }}</a><br><br></p>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
 {% endblock %}

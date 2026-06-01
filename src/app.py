@@ -43,7 +43,7 @@ login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
 # BASE_URL = os.getenv("BASE_URL","http://192.168.0.134:5000")
-BASE_URL = os.getenv("BASE_URL","http://10.107.3.207:5000")
+BASE_URL = os.getenv("BASE_URL","http://10.155.65.207:5000")
 
 # define forms
 class PatientForm(FlaskForm):
@@ -207,11 +207,14 @@ def add_patient():
 
 @app.route('/change_status/<int:file_no>', methods=['POST'])
 @app.route('/change_status/<int:file_no>/admit', methods=['POST'])
+@app.route('/change_status/<int:file_no>/transfer/<int:dept_id>', methods=['POST'])
 @login_required
-def change_status(file_no, admit = False):
+def change_status(file_no, admit = False, dept_id = None):
 
     # retrieve the patient file by file_no
     #from src.models import PatientFile, Status
+
+    # TODO: Implement department transfer functionality.
 
     patient_file = PatientFile.query.get(file_no)
 
@@ -254,13 +257,13 @@ def regen_qr(file_id):
 def scan_qr(file_id):
     patient = PatientFile.query.get(file_id)
     last_checkpoint = FileLog.query.filter_by(file_no=file_id).order_by(FileLog.timestamp.desc()).first()
-    
+    departments = db.session.query(models.Department.department_id, models.Department.department_name).all()
     #print(patient.patient_name) #debug
 
     if request.method == "POST":
         pass
 
-    return render_template("File_track.html", patient = patient, file_log = last_checkpoint)
+    return render_template("File_track.html", patient = patient, file_log = last_checkpoint, departments = departments)
 
 # Implement modify_staff route later
 
