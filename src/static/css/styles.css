@@ -117,3 +117,22 @@ li button {
 #qr_btn{
     text-decoration: none;
 }
+.file_actions{
+    align-items: center;
+}
+.btn[data-dept-id = "1"]{
+    background-color: #4988c3;
+}
+.btn[data-dept-id = "2"]{
+    background-color: #c34949;
+}
+.btn[data-dept-id = "3"]{
+    background-color: #49c34d;
+}
+.btn[data-dept-id = "4"]{
+    background-color: #bdc349;
+}
+
+#file_track{
+    text-align: center;
+}

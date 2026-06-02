@@ -3,23 +3,28 @@
 {% block title %}File Track{% endblock %}
 
 {% block content %}
-<h2>Patient File_{{ patient.file_no }}: {{ patient.patient_name }}</h2>
-<h2>Status: {{patient.status.status_name}}</h2>
-<h2>
-  {% if file_log %}
-    Last Checkpoint: 
-    {{ file_log.staff.department.department_name ~ "; with " ~ file_log.staff.name ~ "; Timestamp: "~ file_log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
-  {% else %}
-    <p>No record found. The file may not have been checked. If this is incorrect, please return the file to the records department for processing.</p>
-  {% endif %}
-</h2>
-<!-- Add a list of buttons for different status changes. Check for current status and only add relevant buttons. Consider also adding a department referral button-->
-  {% if patient.status.status_name != "Admitted" %}
-    <p><a class = "btn" href ="/change_status/{{patient.file_no}}/admit" method = "POST">Admit Patient</a><br><br></p>
-    {% for dept in departments %}
-      {% if file_log and file_log.staff.department.department_id != dept[0] %}
-        <p><a class = "btn" href ="/change_status/{{patient.file_no}}/transfer/{{ dept[0] }}" method = "POST">Transfer to {{ dept[1] }}</a><br><br></p>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+<div class = "section" id = "file_track">
+  <h2>{{ patient.patient_name }} - File  {{patient.file_no }}</h2>
+  <h3>Status: {{patient.status.status_name}}</h3>
+  <h4>
+    {% if file_log %}
+      <strong>Last Checkpoint:</strong><br>
+      <em>{{ file_log.staff.department.department_name ~ " department: with " ~ file_log.staff.name ~";"}}<br>
+      {{"Timestamp: "~ file_log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</em>
+    {% else %}
+      <p>No record found. The file may not have been checked. If this is incorrect, please return the file to the records department for processing.</p>
+    {% endif %}
+  </h4>
+  <div class = "file_actions">
+  <!-- Add a list of buttons for different status changes. Check for current status and only add relevant buttons. Consider also adding a department referral button-->
+    {% if patient.status.status_name != "Admitted" %}
+      <p><a class = "btn" href ="/change_status/{{patient.file_no}}/admit" method = "POST">Admit Patient</a><br><br></p>
+      {% for dept in departments %}
+        {% if file_log and file_log.staff.department.department_id != dept[0] %}
+          <p><a class = "btn" data-dept-id='{{dept[0]}}' href ="/change_status/{{patient.file_no}}/transfer/{{ dept[0] }}" method = "POST">Transfer to {{ dept[1] }}</a><br><br></p>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    </div>
+  </div>
 {% endblock %}
