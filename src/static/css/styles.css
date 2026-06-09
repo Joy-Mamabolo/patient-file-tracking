@@ -136,3 +136,6 @@ li button {
 #file_track{
     text-align: center;
 }
+.file_actions a{
+    text-decoration: none;
+}

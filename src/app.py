@@ -220,20 +220,25 @@ def change_status(file_no, admit = False, dept_id = None):
 
     if not patient_file:
         return "Patient file not found.", 404
-    if not admit:
+    if not admit and not dept_id:
         if patient_file.status_id == 1:  # Assuming status_id=1 corresponds to "Checked In"
             patient_file.status_id = 2  # Assuming status_id=2 corresponds to "Checked Out"
         else:
             patient_file.status_id = 1  # Change back to "Checked In"
-    else:
+    elif admit:
         patient_file.status_id = 3 # Status_id = 3 corresponds to admission, and is excluded from overdue reporting on the home page
+    else:
+        # Patient file is being transferred to a department. Status is not affected, but a log entry will capture the transfer for tracking purposes.
+            pass
 
+    # TODO: Determine if you need to commit after transfer and how to handle schema change.
+    
     db.session.commit()
 
     add_file_log(file_no, current_user.staff_id, patient_file.status_id)
 
-    #TODO: Add user feedback messages to the UI to confirm successful status change and patient involved.
-    message = flash(f"{patient_file.patient_name}'s file status successfully changed!", "success")
+    #Add user feedback messages to the UI to confirm successful status change and patient involved.
+    flash(f"{patient_file.patient_name}'s file status successfully changed!", "success")
     #debug
     #logs = FileLog.query.filter_by(file_no=file_no).all()
     #print(logs[-1])
